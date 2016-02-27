@@ -22,6 +22,12 @@ get '/users/new' do
   erb :new_user
 end
 
+# DUPLICATE Displays a new user form (DONE)
+#-----------------------------------------------------------------
+get '/users/new5' do
+  erb :new_user2
+end
+
 # Displays Home Page - Lists all the users in the database (DONE)
 #-----------------------------------------------------------------
 get '/users' do
@@ -55,7 +61,7 @@ end
 
 # Updates/Edits info of user
 #-----------------------------------------------------------------
-put '/users/:id' do
+patch '/users/:id' do
   # id = params[:id]
   # @users = @users.where(id: id)
   @users = @users.where(id: params[:id])

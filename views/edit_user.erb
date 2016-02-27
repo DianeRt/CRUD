@@ -4,8 +4,8 @@
 
 <!-- html form -->
 <% @users.each do |user| %>
-  <form action="/users/:id" method="POST">
-  <input type="hidden" name="_method" value="PUT">
+  <form action="/users/<%= user[:id] %>" method="POST">
+  <input type="hidden" name="_method" value="patch">
     <p>
       First name:
       <br />
