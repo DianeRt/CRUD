@@ -1,0 +1,13 @@
+<h1>Complete CRUD Users</h1>
+
+<!--  Lists all the users in the database -->
+<% @users.each do |user| %>
+  <li>
+    <a href="/users/<%= user[:id] %>">
+      <%= "#{user[:fname].capitalize} #{user[:lname].capitalize}" %>
+    </a>
+  </li>
+<% end %>
+
+<hr />
+<a href="/users/new">Add New User</a>

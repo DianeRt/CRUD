@@ -1,0 +1,23 @@
+<!-- Displays the info of a specific user  -->
+<% @users.each do |user| %>
+  
+  <!-- Displays user info  -->
+  <%= "#{user[:fname].capitalize} #{user[:lname].capitalize}" %>
+  <br />
+  Email:
+  <%= "#{user[:email]}" %>
+
+  <!-- Creates a link to edit user info  -->
+  <br />
+  <a href="/users/<%= user[:id] %>/edit">Edit</a>
+
+  <!-- Creates a button to delete user info  -->
+  <form action="/users/<%= user[:id] %>" method="POST">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="submit" value="Delete User">
+  </form>
+
+<% end %>
+
+<br />
+<a href="/users">Back to Home Page</a>
