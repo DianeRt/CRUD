@@ -1,5 +1,7 @@
-require 'sinatra'
-require 'sequel'
+require 'rubygems'
+require 'bundler/setup'
+
+Bundler.require(:default)
 
 DB = Sequel.connect("postgresql://localhost/users")
 
@@ -22,16 +24,10 @@ get '/users/new' do
   erb :new_user
 end
 
-# DUPLICATE Displays a new user form (DONE)
-#-----------------------------------------------------------------
-get '/users/new5' do
-  erb :new_user2
-end
-
 # Displays Home Page - Lists all the users in the database (DONE)
 #-----------------------------------------------------------------
 get '/users' do
-  @users.all
+  @users.all #<---- is this necessary? still works without it.
   erb :all_users
 end
 
@@ -39,7 +35,6 @@ end
 #-----------------------------------------------------------------
 get '/users/:id' do
   @users = @users.where(id: params[:id])
-  # @users = @users.find params[:id] #<--- did not work before because it was written as find(params[:id])
   # @users = @users.find(:id => params[:id]) #<--- using this only displays first data in DB
   erb :spec_user
 end
@@ -48,7 +43,6 @@ end
 #-----------------------------------------------------------------
 get '/users/:id/edit' do
   @users = @users.where(id: params[:id])
-  # @users = @users.find params[:id]
   erb :edit_user
 end
 
@@ -59,19 +53,11 @@ post '/users' do
   redirect '/users'
 end
 
-# Updates/Edits info of user
+# Updates/Edits info of user (DONE)
 #-----------------------------------------------------------------
 patch '/users/:id' do
-  # id = params[:id]
-  # @users = @users.where(id: id)
   @users = @users.where(id: params[:id])
-  # @users = @users.find params[:id]
-  # @users = @users[id: params[:id]]
-  # @users.where(id: params[:id]).update(params[:users])
-  # @users.update_attributes(fname: params[:fname], lname: params[:lname], email: params[:email])
-  @users.update(fname: params[:fname], lname: params[:lname], email: params[:email]) #<--- this works  @user.update params
-  # DB[:users].where(id: params[:id].to_i)
-  # @users.update(params[:users])
+  @users.update(fname: params[:fname], lname: params[:lname], email: params[:email])
   redirect '/users'
 end
 
@@ -82,29 +68,3 @@ delete '/users/:id' do
   @users.delete
   redirect '/users'
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
