@@ -21,29 +21,29 @@ end
 # Displays a new user form (DONE)
 #-----------------------------------------------------------------
 get '/users/new' do
-  erb :new_user
+  erb :"users/new"
 end
 
 # Displays Home Page - Lists all the users in the database (DONE)
 #-----------------------------------------------------------------
 get '/users' do
   @users.all #<---- is this necessary? still works without it.
-  erb :all_users
+  erb :"users/index"
 end
 
 # Displays specific users (DONE)
 #-----------------------------------------------------------------
 get '/users/:id' do
-  @users = @users.where(id: params[:id])
+  @user = @users.where(id: params[:id]).first
   # @users = @users.find(:id => params[:id]) #<--- using this only displays first data in DB
-  erb :spec_user
+  erb :"users/show"
 end
 
 # Dispalys a user Edit Page (DONE)
 #-----------------------------------------------------------------
 get '/users/:id/edit' do
-  @users = @users.where(id: params[:id])
-  erb :edit_user
+  @user = @users.where(id: params[:id]).first
+  erb :"users/edit"
 end
 
 # Creates new user and saves it to database (DONE)
@@ -56,15 +56,14 @@ end
 # Updates/Edits info of user (DONE)
 #-----------------------------------------------------------------
 patch '/users/:id' do
-  @users = @users.where(id: params[:id])
-  @users.update(fname: params[:fname], lname: params[:lname], email: params[:email])
+  @user = @users.where(id: params[:id])
+  @user.update(fname: params[:fname], lname: params[:lname], email: params[:email])
   redirect '/users'
 end
 
 # Deletes User (DONE)
 #-----------------------------------------------------------------
 delete '/users/:id' do
-  @users = @users.where(id: params[:id])
-  @users.delete
+  @user = @users.where(id: params[:id]).delete
   redirect '/users'
 end
