@@ -1,36 +1,35 @@
 <!-- Edit User Form -->
-
 <h1>Edit User Info</h1>
 
 <!-- html form -->
-<% @users.each do |user| %>
-  <form action="/users/<%= user[:id] %>" method="POST">
-  <input type="hidden" name="_method" value="patch">
-    <p>
-      First name:
-      <br />
-      <input type="text" name="fname" value=<%= "#{user[:fname]}" %> >
-      <br />
-    </p>
-    <p>
-      Last name:
-      <br />
-      <input type="text" name="lname" value=<%= "#{user[:lname]}" %> >
-      <br />
-    </p>
-      <p>
-      Email:
-      <br />
-      <input type="text" name="email" value=<%= "#{user[:email]}" %> >
-      <br />
-    </p>
+<form action="/users/<%= @user[:id] %>" method="post">
+<input type="hidden" name="_method" value="patch">
 
-    <!-- Creating a button to update/edit info -->
-    <input type="submit" value="Update Info">
+  <p>
+    First name:
+    <br />
+    <input type="text" name="fname" value="<%= @user[:fname] %>">
+    <br />
+  </p>
 
-  </form>
-<% end %>
+  <p>
+    Last name:
+    <br />
+    <input type="text" name="lname" value="<%= @user[:lname] %>">
+    <br />
+  </p>
 
+  <p>
+    Email:
+    <br />
+    <input type="text" name="email" value="<%= @user[:email] %>">
+    <br />
+  </p>
+
+  <!-- Creating a button to update/edit info -->
+  <input type="submit" value="Update Info">
+  
+</form>
 
 <!-- option to go back to home page -->
 <br />
