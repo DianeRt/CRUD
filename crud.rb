@@ -15,7 +15,19 @@ end
 # redirects '/' route to '/users' route (DONE)
 #-----------------------------------------------------------------
 get '/' do
-  redirect '/users'
+  redirect '/homepage'
+end
+
+# Displays homepage for users to log in or sign up
+#-----------------------------------------------------------------
+get '/homepage' do
+  erb :"homepage/index"
+end
+
+# Displays a log in page
+#-----------------------------------------------------------------
+get '/users/login' do
+  erb :"homepage/login"
 end
 
 # Displays a new user form (DONE)
@@ -49,7 +61,7 @@ end
 # Creates new user and saves it to database (DONE)
 #-----------------------------------------------------------------
 post '/users' do
-  @users.insert(fname: params[:fname], lname: params[:lname], email: params[:email])
+  @users.insert(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password: params[:password])
   redirect '/users'
 end
 
