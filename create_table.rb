@@ -8,4 +8,6 @@ DB.create_table :users do
   String :fname
   String :lname
   String :email
+  String :username
+  String :password
 end
