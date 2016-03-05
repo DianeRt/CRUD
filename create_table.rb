@@ -9,5 +9,6 @@ DB.create_table :users do
   String :lname
   String :email
   String :username
-  String :password
+  String :password_hash
+  String :password_salt
 end
