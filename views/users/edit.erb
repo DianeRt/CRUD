@@ -8,21 +8,35 @@
   <p>
     First name:
     <br />
-    <input type="text" name="fname" value="<%= @user[:fname] %>">
+    <input type="text" name="fname" value="<%= @user[:fname] %>" >
     <br />
   </p>
 
   <p>
     Last name:
     <br />
-    <input type="text" name="lname" value="<%= @user[:lname] %>">
+    <input type="text" name="lname" value="<%= @user[:lname] %>" >
     <br />
   </p>
 
   <p>
     Email:
     <br />
-    <input type="text" name="email" value="<%= @user[:email] %>">
+    <input type="text" name="email" value="<%= @user[:email] %>" >
+    <br />
+  </p>
+
+  <p>
+    Username:
+    <br />
+    <input type="text" name="username" value="<%= @user[:username] %>" >
+    <br />
+  </p>
+ 
+  <p>
+    New Password:
+    <br />
+    <input type="password" name="password" required>
     <br />
   </p>
 
@@ -33,4 +47,4 @@
 
 <!-- option to go back to home page -->
 <br />
-<a href="/users">Back to home page</a>
+<a href="/users/<%= @user[:id] %>">Back to User Info page</a>
