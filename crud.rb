@@ -1,9 +1,10 @@
 require 'rubygems'
 require 'bundler/setup'
 
-Bundler.require(:default)
+Bundler.require(:default) 
 
 DB = Sequel.connect("postgresql://localhost/users")
+
 
 # create @users variable to give access to view files
 # do i have to create an initialize method?
@@ -24,10 +25,12 @@ get '/homepage' do
   erb :"homepage/index"
 end
 
-# Displays a log in page
+# Logs out user
 #-----------------------------------------------------------------
-get '/users/login' do
-  erb :"homepage/login"
+get '/users/logout' do
+  @user = nil
+  @users = DB[:users]
+  redirect '/homepage'
 end
 
 # Displays a new user form (DONE)
@@ -58,19 +61,42 @@ get '/users/:id/edit' do
   erb :"users/edit"
 end
 
+# Login - Checks user credentials
+#-----------------------------------------------------------------
+post '/users/login' do
+  @user = @users.where(username: params[:username]).first
+  if @user == nil
+    erb :"homepage/error"
+  else
+    # password_salt = @user[:password_salt]
+    password = BCrypt::Engine.hash_secret(params[:password], @user[:password_salt])
+    if @user[:password_hash] == password
+      erb :"users/show"
+    else
+      erb :"homepage/error"
+    end
+  end
+end
+
 # Creates new user and saves it to database (DONE)
 #-----------------------------------------------------------------
 post '/users' do
-  @users.insert(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password: params[:password])
-  redirect '/users'
+  password_salt = BCrypt::Engine.generate_salt
+  password_hash = BCrypt::Engine.hash_secret(params[:password], password_salt)
+  @users.insert(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
+  @user = @users.where(username: params[:username]).first
+  erb :"users/show"
 end
 
 # Updates/Edits info of user (DONE)
 #-----------------------------------------------------------------
 patch '/users/:id' do
   @user = @users.where(id: params[:id])
-  @user.update(fname: params[:fname], lname: params[:lname], email: params[:email])
-  redirect '/users'
+  password_salt = BCrypt::Engine.generate_salt
+  password_hash = BCrypt::Engine.hash_secret(params[:password], password_salt)
+  @user.update(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
+  @user = @users.where(username: params[:username]).first
+  erb :"users/show"
 end
 
 # Deletes User (DONE)
