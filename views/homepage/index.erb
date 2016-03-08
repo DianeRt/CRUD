@@ -1,5 +1,8 @@
 <h1>Welcome</h1>
 
+<%= flash[:error] %>
+<%= flash[:success] %>
+
 <form action="/users/login" method="post">
 
   <p>
@@ -12,6 +15,7 @@
  
   <input type="submit" value="Login">
 </form>
+
 
 <!-- <a href="/users/login">Log In | </a> -->
 <a href="/users/new">Sign Up</a>

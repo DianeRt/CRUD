@@ -1,6 +1,7 @@
 <!-- Displays the info of a specific user  -->
 <h1> User Info </h1>
-  
+<%= flash[:success] %>
+<br />
 <!-- Displays user info  -->
 <%= "#{@user[:fname].capitalize} #{@user[:lname].capitalize}" %>
 <br />
@@ -15,4 +16,7 @@ Email: <%= "#{@user[:email]}" %>
 <!-- Creates a link to edit user info  -->
 <a href="/users/<%= @user[:id] %>/edit">Edit User Info</a>
 <br />
-<a href="/users/logout">Log Out</a>
+
+<form action="/users/logout" method="POST">
+  <input type="submit" value="Log out"/>
+</form>

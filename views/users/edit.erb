@@ -2,49 +2,12 @@
 <h1>Edit User Info</h1>
 
 <!-- html form -->
-<form action="/users/<%= @user[:id] %>" method="post">
-<input type="hidden" name="_method" value="patch">
-
-  <p>
-    First name:
-    <br />
-    <input type="text" name="fname" value="<%= @user[:fname] %>" >
-    <br />
-  </p>
-
-  <p>
-    Last name:
-    <br />
-    <input type="text" name="lname" value="<%= @user[:lname] %>" >
-    <br />
-  </p>
-
-  <p>
-    Email:
-    <br />
-    <input type="text" name="email" value="<%= @user[:email] %>" >
-    <br />
-  </p>
-
-  <p>
-    Username:
-    <br />
-    <input type="text" name="username" value="<%= @user[:username] %>" >
-    <br />
-  </p>
- 
-  <p>
-    New Password:
-    <br />
-    <input type="password" name="password" required>
-    <br />
-  </p>
-
-  <!-- Creating a button to update/edit info -->
-  <input type="submit" value="Update Info">
-  
-</form>
+<%= erb :"users/_form", locals: {action: "/users/#{@user[:id]}", edit_form: true} %>
 
 <!-- option to go back to home page -->
 <br />
 <a href="/users/<%= @user[:id] %>">Back to User Info page</a>
+
+<form action="/users/logout" method="POST">
+  <input type="submit" value="Log out"/>
+</form>
