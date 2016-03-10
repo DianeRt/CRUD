@@ -25,16 +25,23 @@ class Crud < Sinatra::Base
     @current_user ||= @users.where(id: session[:current_user_id]).first
   end
 
-  def authorize_user
+  def authorize_user(params=nil)
     unless block_given?
       raise "block must be provided"
     end
 
     if user_signed_in?
-      yield
-    else
+      if current_user[:admin] == true
+        yield
+      elsif params.to_s == session[:current_user_id].to_s
+        yield
+      else
+        flash[:error] = "Unauthorized access"
+        redirect "/users/#{session[:current_user_id]}"
+      end
+    else  
       flash[:error] = "Unauthorized access"
-      redirect "/"
+      redirect '/homepage'
     end
   end
 
@@ -48,8 +55,8 @@ class Crud < Sinatra::Base
   #-----------------------------------------------------------------
   get '/homepage' do
     if user_signed_in?
-      @user = current_user
-      redirect "/users/#{@user[:id]}"
+      flash[:error] = "Please log out to access homepage"
+      redirect "/users/#{session[:current_user_id]}"
     else
       erb :"homepage/index"
     end
@@ -65,7 +72,7 @@ class Crud < Sinatra::Base
   #-----------------------------------------------------------------
   get '/users' do
     authorize_user do
-      @users.all
+      @users = @users.order(:id).all
       erb :"users/index"
     end
   end
@@ -73,7 +80,7 @@ class Crud < Sinatra::Base
   # Displays specific users (DONE)
   #-----------------------------------------------------------------
   get '/users/:id' do
-    authorize_user do
+    authorize_user(params[:id]) do
       @user = @users.where(id: params[:id]).first
       erb :"users/show"
     end
@@ -82,7 +89,7 @@ class Crud < Sinatra::Base
   # Dispalys a user Edit Page (DONE)
   #-----------------------------------------------------------------
   get '/users/:id/edit' do
-    authorize_user do
+    authorize_user(params[:id]) do
       @user = current_user
       erb :"users/edit"
     end
