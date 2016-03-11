@@ -1,11 +1,21 @@
 <h1>Complete CRUD Users</h1>
 
+<%= flash[:success] %>
+
 <!--  Lists all the users in the database -->
 <% @users.each do |user| %>
   <li>
     <a href="/users/<%= user[:id] %>">
       <%= "#{user[:fname].capitalize} #{user[:lname].capitalize}" %>
     </a>
+    
+    <!-- Shows a button to change user's admin status -->
+    <form action="/users/admin/<%= user[:id] %>" method="post">
+      <input type="hidden" name="_method" value="patch">
+      <% submit_value = user[:admin] ? "Remove as Admin" : "Assign as Admin" %>
+      <input type="submit" value="<%= submit_value %>">
+    </form>
+    
   </li>
 <% end %>
 
