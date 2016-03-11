@@ -6,6 +6,7 @@ Bundler.require(:default)
 
 class Crud < Sinatra::Base
   enable :sessions
+  enable :method_override
   register Sinatra::Flash
 
   DB = Sequel.connect("postgresql://localhost/users")
@@ -86,7 +87,7 @@ class Crud < Sinatra::Base
     end
   end
 
-  # Dispalys a user Edit Page (DONE)
+  # Displays a user Edit Page (DONE)
   #-----------------------------------------------------------------
   get '/users/:id/edit' do
     authorize_user(params[:id]) do
@@ -128,7 +129,7 @@ class Crud < Sinatra::Base
   post '/users' do
     password_salt = BCrypt::Engine.generate_salt
     password_hash = BCrypt::Engine.hash_secret(params[:password], password_salt)
-    @users.insert(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
+    @users.insert(admin: false, fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
     flash[:success] = "Successfully added new user"
     @user = @users.where(username: params[:username]).first
     session[:current_user_id] = @user[:id]
@@ -145,6 +146,18 @@ class Crud < Sinatra::Base
     @user = current_user
     flash[:success] = "Successfully updated user info"
     redirect "/users/#{@user[:id]}"
+  end
+
+  # Updates/Changes the admin status of user
+  #-----------------------------------------------------------------
+  patch '/users/admin/:id' do
+    @user = @users.where(id: params[:id])
+    user_admin = !@user[:admin]
+    @user.update(admin: user_admin)
+    status = user_admin ? "assigned as admin" : "removed as admin"
+    name = @user.first
+    flash[:success] = "#{name[:fname].capitalize} #{name[:lname].capitalize} is #{status}"
+    redirect "/users"
   end
 
   # Deletes User (DONE)
