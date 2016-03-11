@@ -2,7 +2,7 @@
 <h1>Edit User Info</h1>
 
 <!-- html form -->
-<%= erb :"users/form", locals: {action: "/users/#{@user[:id]}", edit_form: true} %>
+<%= erb :"users/_form", locals: {action: "/users/#{@user[:id]}", edit_form: true} %>
 
 <!-- option to go back to home page -->
 <br />
