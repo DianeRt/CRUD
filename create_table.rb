@@ -1,4 +1,3 @@
-require 'sinatra'
 require 'sequel'
 
 DB = Sequel.connect("postgresql://localhost/users")
