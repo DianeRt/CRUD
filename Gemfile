@@ -5,3 +5,7 @@ gem 'sequel'
 gem 'pg'
 gem 'bcrypt'
 gem 'sinatra-flash'
+
+group :development do
+  gem 'rerun'
+end
