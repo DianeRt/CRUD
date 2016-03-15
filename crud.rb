@@ -46,7 +46,7 @@ class Crud < Sinatra::Base
     end
   end
 
-  # redirects '/' route to '/users' route (DONE)
+  # redirects '/' route to '/users' route
   #-----------------------------------------------------------------
   get '/' do
     redirect '/homepage'
@@ -54,7 +54,7 @@ class Crud < Sinatra::Base
 
   # Displays homepage for users to log in or sign up
   #-----------------------------------------------------------------
-  get '/homepage' do
+  get '/homepage/?' do
     if user_signed_in?
       flash[:error] = "Please log out to access homepage"
       redirect "/users/#{session[:current_user_id]}"
@@ -63,42 +63,42 @@ class Crud < Sinatra::Base
     end
   end
 
-  # Displays a new user form (DONE)
+  # Displays a new user form
   #-----------------------------------------------------------------
-  get '/users/new' do
+  get '/users/new/?' do
     erb :"users/new"
   end
 
-  # Displays Home Page - Lists all the users in the database (DONE)
+  # Displays Home Page - Lists all the users in the database
   #-----------------------------------------------------------------
-  get '/users' do
+  get '/users/?' do
     authorize_user do
       @users = @users.order(:id).all
       erb :"users/index"
     end
   end
 
-  # Displays specific users (DONE)
+  # Displays specific users
   #-----------------------------------------------------------------
-  get '/users/:id' do
+  get '/users/:id/?' do
     authorize_user(params[:id]) do
       @user = @users.where(id: params[:id]).first
       erb :"users/show"
     end
   end
 
-  # Displays a user Edit Page (DONE)
+  # Displays a user Edit Page
   #-----------------------------------------------------------------
-  get '/users/:id/edit' do
+  get '/users/:id/edit/?' do
     authorize_user(params[:id]) do
-      @user = current_user
+      @user = @users.where(id: params[:id]).first
       erb :"users/edit"
     end
   end
 
   # Login - Checks user credentials
   #-----------------------------------------------------------------
-  post '/users/login' do
+  post '/users/login/?' do
     @user = @users.where(username: params[:username]).first
     if @user == nil
       flash[:error] = "Wrong username or password"
@@ -117,28 +117,33 @@ class Crud < Sinatra::Base
 
   # Logs out user
   #-----------------------------------------------------------------
-  post '/users/logout' do
+  post '/users/logout/?' do
     flash[:success] = "You have successfully logged out."
     @current_user = nil
     session[:current_user_id] = nil
     redirect '/homepage'
   end
 
-  # Creates new user and saves it to database (DONE)
+  # Creates new user and saves it to database
   #-----------------------------------------------------------------
-  post '/users' do
+  post '/users/?' do
     password_salt = BCrypt::Engine.generate_salt
     password_hash = BCrypt::Engine.hash_secret(params[:password], password_salt)
     @users.insert(admin: false, fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
-    flash[:success] = "Successfully added new user"
-    @user = @users.where(username: params[:username]).first
-    session[:current_user_id] = @user[:id]
-    redirect "/users/#{@user[:id]}"
+    if user_signed_in?
+      flash[:success] = "Successfully added new user"
+      redirect '/users'
+    else
+      flash[:succes] = "Successfully created new account"
+      @user = @users.where(username: params[:username]).first
+      session[:current_user_id] = @user[:id]
+      redirect "/users/#{@user[:id]}"
+    end
   end
 
-  # Updates/Edits info of user (DONE)
+  # Updates/Edits info of user
   #-----------------------------------------------------------------
-  patch '/users/:id' do
+  patch '/users/:id/?' do
     @user = @users.where(id: params[:id])
     password_salt = BCrypt::Engine.generate_salt
     password_hash = BCrypt::Engine.hash_secret(params[:password], password_salt)
@@ -150,7 +155,7 @@ class Crud < Sinatra::Base
 
   # Updates/Changes the admin status of user
   #-----------------------------------------------------------------
-  patch '/users/admin/:id' do
+  patch '/users/admin/:id/?' do
     @user = @users.where(id: params[:id])
     user_admin = !@user[:admin]
     @user.update(admin: user_admin)
@@ -160,11 +165,19 @@ class Crud < Sinatra::Base
     redirect "/users"
   end
 
-  # Deletes User (DONE)
+  # Deletes User
   #-----------------------------------------------------------------
-  delete '/users/:id' do
-    @user = @users.where(id: params[:id]).delete
-    redirect '/users'
+  delete '/users/:id/?' do
+    name = @users.where(id: params[:id]).first
+    @users.where(id: params[:id]).delete
+    if current_user == nil
+      flash[:success] = "Successfully deleted account"
+      session[:current_user_id] = nil
+      redirect '/homepage'
+    else
+      flash[:success] = "Successfully deleted #{name[:fname].capitalize} #{name[:lname].capitalize}"
+      redirect '/users'
+    end
   end
 
   run!
