@@ -3,7 +3,7 @@ namespace :db do
   task :migrate, [:version] do |t, args|
     require "sequel"
     Sequel.extension :migration
-    db = Sequel.connect(ENV.fetch("DATABASE_URL"))
+    db = Sequel.connect("postgresql://localhost/users")
     if args[:version]
       puts "Migrating to version #{args[:version]}"
       Sequel::Migrator.run(db, "db/migrations", target: args[:version].to_i)
