@@ -6,7 +6,9 @@ gem 'pg'
 gem 'bcrypt'
 gem 'sinatra-flash'
 
-group :development do
+group :development, :test do
   gem 'rerun'
   gem 'rack'
+  gem 'minitest'
+  gem 'nokogiri'
 end
