@@ -4,12 +4,21 @@ require 'sinatra/base'
 
 Bundler.require(:default) 
 
+configure :test do
+ set :database, 'postgresql://localhost/test'
+ DB = Sequel.connect("postgresql://localhost/test")
+end
+
+configure :development do
+  set :database, 'postgresql://localhost/users'
+  DB = Sequel.connect("postgresql://localhost/users")
+end
+
 class ApplicationController < Sinatra::Base
   enable :sessions
   enable :method_override
   register Sinatra::Flash
   set :views, File.expand_path('../../views', __FILE__)
-  DB = Sequel.connect("postgresql://localhost/users")
 
   # create @users variable to give access to view files
   #-----------------------------------------------------------------
@@ -60,7 +69,7 @@ class ApplicationController < Sinatra::Base
       flash[:error] = "Please log out to access homepage"
       redirect "/users/#{session[:current_user_id]}"
     else
-      erb :"index"
+      erb :"home"
     end
   end
 end
