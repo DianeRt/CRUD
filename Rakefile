@@ -33,3 +33,14 @@ namespace :generate do
     puts "Created the migration #{filename}"
   end
 end
+
+namespace :mini do
+  desc "Run minitest"
+  task :test
+  require 'rake/testtask'
+  Rake::TestTask.new do |t|
+    t.libs = %w(spec app)
+    t.pattern = "spec/**/*_spec.rb"
+    t.warning = false
+  end
+end
