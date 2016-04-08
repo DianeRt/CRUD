@@ -5,6 +5,7 @@ gem 'sequel'
 gem 'pg'
 gem 'bcrypt'
 gem 'sinatra-flash'
+gem 'sprockets'
 
 group :development, :test do
   gem 'rerun'
