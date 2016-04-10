@@ -19,7 +19,8 @@ class ApplicationController < Sinatra::Base
   enable :method_override
   disable :show_exceptions   # disabled to hide NoMethodError. Display an error 500 page instead.
   register Sinatra::Flash
-  set :views, File.expand_path('../../views', __FILE__)
+  set :views, proc { File.join(root, "..", "views") } 
+  set :public_folder, proc { File.join(root, "../..", "public") } # set public folder location relative to this file
 
 
   # Sprockets Setup
@@ -28,12 +29,12 @@ class ApplicationController < Sinatra::Base
   set :environment, Sprockets::Environment.new
 
   # append assets paths
-  environment.append_path "assets/stylesheets"
-  environment.append_path "assets/javascripts"
+  environment.append_path "app/assets/stylesheets"
+  environment.append_path "app/assets/javascripts"
 
   # compress assets
-  # environment.js_compressor  = :uglify
-  # environment.css_compressor = :scss
+  environment.js_compressor  = :uglify
+  environment.css_compressor = :scss
 
   # get assets
   get "/assets/*" do
