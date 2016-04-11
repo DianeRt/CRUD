@@ -8,4 +8,5 @@ gem 'sinatra-flash'
 
 group :development do
   gem 'rerun'
+  gem 'rack'
 end
