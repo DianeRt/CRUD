@@ -3,7 +3,11 @@ namespace :db do
   task :migrate, [:version] do |t, args|
     require "sequel"
     Sequel.extension :migration
-    db = Sequel.connect("postgresql://localhost/users")
+    if (ENV['RACK_ENV'] == "test")
+      db = Sequel.connect("postgresql://localhost/test")
+    else
+      db = Sequel.connect("postgresql://localhost/users")
+    end
     if args[:version]
       puts "Migrating to version #{args[:version]}"
       Sequel::Migrator.run(db, "db/migrations", target: args[:version].to_i)
@@ -31,5 +35,18 @@ namespace :generate do
     end
 
     puts "Created the migration #{filename}"
+  end
+end
+
+namespace :mini do
+  desc "Run minitest"
+  task :test
+  ENV['RACK_ENV'] = 'test'
+  Rake::Task["db:migrate"].invoke
+  require 'rake/testtask'
+  Rake::TestTask.new do |t|
+    t.libs = %w(spec app)
+    t.pattern = "spec/**/*_spec.rb"
+    t.warning = false
   end
 end

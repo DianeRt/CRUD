@@ -6,10 +6,15 @@ GEM
     listen (3.0.6)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9.7)
+    minitest (5.8.4)
+    nokogiri (1.5.6)
     pg (0.18.4)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
+    rake (11.1.1)
     rb-fsevent (0.9.7)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
@@ -29,7 +34,11 @@ PLATFORMS
 
 DEPENDENCIES
   bcrypt
+  minitest
+  nokogiri
   pg
+  rack-test
+  rake
   rerun
   sequel
   sinatra

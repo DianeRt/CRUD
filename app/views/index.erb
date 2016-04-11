@@ -1,21 +1,27 @@
-<h1>Welcome</h1>
+<h1>Complete CRUD Users</h1>
 
-<%= flash[:error] %>
 <%= flash[:success] %>
 
-<form action="/users/login" method="post">
+<!--  Lists all the users in the database -->
+<% @users.each do |user| %>
+  <li>
+    <a href="/users/<%= user[:id] %>">
+      <%= "#{user[:fname].capitalize} #{user[:lname].capitalize}" %>
+    </a>
+    
+    <!-- Shows a button to change user's admin status -->
+    <form action="/users/admin/<%= user[:id] %>" method="post">
+      <input type="hidden" name="_method" value="patch">
+      <% submit_value = user[:admin] ? "Remove as Admin" : "Assign as Admin" %>
+      <input type="submit" value="<%= submit_value %>">
+    </form>
+    
+  </li>
+<% end %>
 
-  <p>
-    Username: <input type="text" name="username">
-  </p>
- 
-  <p>
-    Password: <input type="password" name="password">
-  </p>
- 
-  <input type="submit" value="Login">
+<hr />
+<a href="/users/new">Add New User</a>
+
+<form action="/users/logout" method="POST">
+  <input type="submit" value="Log out"/>
 </form>
-
-
-<!-- <a href="/users/login">Log In | </a> -->
-<a href="/users/new">Sign Up</a>

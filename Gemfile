@@ -6,7 +6,10 @@ gem 'pg'
 gem 'bcrypt'
 gem 'sinatra-flash'
 
-group :development do
+group :development, :test do
   gem 'rerun'
-  gem 'rack'
+  gem 'rack-test', require: 'rack/test'
+  gem 'minitest'
+  gem 'nokogiri'
+  gem 'rake'
 end

@@ -11,7 +11,7 @@ class UsersController < ApplicationController
   get '/users/?' do
     authorize_user do
       @users = @users.order(:id).all
-      erb :"admin"
+      erb :"index"
     end
   end
 
