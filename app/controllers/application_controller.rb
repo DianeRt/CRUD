@@ -20,28 +20,7 @@ class ApplicationController < Sinatra::Base
   disable :show_exceptions   # disabled to hide NoMethodError. Display an error 500 page instead.
   register Sinatra::Flash
   set :views, proc { File.join(root, "..", "views") } 
-  set :public_folder, proc { File.join(root, "../..", "public") } # set public folder location relative to this file
-
-
-  # Sprockets Setup
-  #-----------------------------------------------------------------
-  # initialize new sprockets environment
-  set :environment, Sprockets::Environment.new
-
-  # append assets paths
-  environment.append_path "app/assets/stylesheets"
-  environment.append_path "app/assets/javascripts"
-
-  # compress assets
-  environment.js_compressor  = :uglify
-  environment.css_compressor = :scss
-
-  # get assets
-  get "/assets/*" do
-    env["PATH_INFO"].sub!("/assets", "")
-    settings.environment.call(env)
-  end
-  #-----------------------------------------------------------------
+  set :public_folder, proc { File.join(root, "../../") } # set public folder location relative to this file
 
 
   # create @users variable to give access to view files
@@ -60,13 +39,13 @@ class ApplicationController < Sinatra::Base
   end
 
   error 403 do
-    'Access forbidden'
+    erb :"error", locals: { error: "Access Forbidden"}
   end
 
   # Raises an error if admin goes to a '/users/:id' page that does not exist
   # Example: '/users/99' will not exist if there is no ID#99 in the database 
   error 500 do
-    'Page does not exist'
+    erb :"error", locals: { error: "Page does not exist"}
   end
 
   def authorize_user(params=nil)
