@@ -23,11 +23,8 @@ class ApplicationController < Sinatra::Base
   set :public_folder, proc { File.join(root, "../../") } # set public folder location relative to this file
 
 
-  # create @users variable to give access to view files
-  #-----------------------------------------------------------------
   def initialize
     super
-    @users = DB[:users] #=> Sequel::Dataset
   end
 
   def user_signed_in?
@@ -35,7 +32,7 @@ class ApplicationController < Sinatra::Base
   end
 
   def current_user
-    @current_user ||= @users.where(id: session[:current_user_id]).first
+    @current_user ||= User.first(id: session[:current_user_id])
   end
 
   error 403 do
@@ -67,7 +64,7 @@ class ApplicationController < Sinatra::Base
   end
 
   
-  # redirects '/' route to '/users' route
+  # redirects '/' route to '/homepage' route
   #-----------------------------------------------------------------
   get '/' do
     redirect '/homepage'
