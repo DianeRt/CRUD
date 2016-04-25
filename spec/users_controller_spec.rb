@@ -17,8 +17,8 @@ describe UsersController do
   describe "when logged in as an admin" do
     before do
       # DB.transaction(:rollback => :always) do
-        @admin = User.create(admin: true, fname: "f1", lname: "l1", email: "e1", username: "u1")
-        @user = User.create(fname: "different_user", lname: "l1")
+        @admin = User.create(admin: true, fname: "ff1", lname: "ll1", email: "ee1@e1.com", username: "uu1")
+        @user = User.create(fname: "different_user", lname: "ll1", email:"diff@diff.com", username: "diff1")
         env "rack.session", {:current_user_id => @admin[:id]}
       # end
     end
@@ -46,8 +46,8 @@ describe UsersController do
   describe "when logged in as a regular user" do
     before do
       # DB.transaction(:rollback => :always) do
-        @regular_user = User.create(admin: false, fname: "f2", lname: "l2", email: "e2", username: "u2")
-        @user = User.create(fname: "different_user", lname: "l2")
+        @regular_user = User.create(admin: false, fname: "ff2", lname: "ll2", email: "ee2@e2.com", username: "uu2")
+        @user = User.create(fname: "different_user", lname: "ll2", email:"diff@diff.com", username: "diff1")
         env "rack.session", {:current_user_id => @regular_user[:id]}
       # end
     end
@@ -72,8 +72,8 @@ describe UsersController do
   describe "testing login, create, update and delete" do
     before do
       # DB.transaction(:rollback => :always) do
-        post '/users', params = {fname: "f3", lname: "l3", email: "e3", username: "u3", password: "p3"}
-        @user = User.first(fname: "f3")
+        post '/users', params = {fname: "ff3", lname: "ll3", email: "ee3@e3.com", username: "uu3", password: "p3"}
+        @user = User.first(fname: "ff3")
       # end
     end
 
@@ -83,7 +83,7 @@ describe UsersController do
     end
 
     it "successfully logs in a user" do
-      post '/users/login', params = {username: "u3", password: "p3"}
+      post '/users/login', params = {username: "uu3", password: "p3"}
       follow_redirect!
       path = last_request.fullpath
       path.must_equal "/users/#{@user[:id]}"
@@ -91,7 +91,7 @@ describe UsersController do
 
     it "updates current_user info" do
       env "rack.session", {:current_user_id => @user[:id]}
-      patch "/users/#{@user[:id]}", params = {fname: "FNAME", lname: "l3", email: "e3", username: "u3", password: "p3"}
+      patch "/users/#{@user[:id]}", params = {fname: "FNAME", lname: "ll3", email: "ee3@e3.com", username: "uu3", password: "p3"}
       @user = User.first(id: @user[:id])
       @user[:fname].must_equal "FNAME"
     end

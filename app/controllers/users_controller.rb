@@ -65,14 +65,21 @@ class UsersController < ApplicationController
   #-----------------------------------------------------------------
   post '/users/?' do
     password_salt, password_hash = User.password(params[:password])
-    @user = User.create(admin: false, fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
-    if user_signed_in?
-      flash[:success] = "Successfully added new user"
-      redirect '/users'
+    @user = User.new(admin: false, fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
+    @user.valid?
+    if @user.errors.count == 0
+      @user.save
+      if user_signed_in?
+        flash[:success] = "Successfully added new user"
+        redirect '/users'
+      else
+        flash[:succes] = "Successfully created new account"
+        session[:current_user_id] = @user[:id]
+        redirect "/users/#{@user[:id]}"
+      end
     else
-      flash[:succes] = "Successfully created new account"
-      session[:current_user_id] = @user[:id]
-      redirect "/users/#{@user[:id]}"
+      flash[:error] = @user.errors.full_messages
+      redirect '/users/new/?'
     end
   end
 

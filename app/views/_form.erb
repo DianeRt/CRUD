@@ -3,6 +3,14 @@
     <input type="hidden" name="_method" value="patch">
   <% end %>
 
+  <%= flash[:success] %>
+  <% if flash[:error] %>
+   <% flash[:error].each do |error| %>
+     <li><%= error.capitalize + "." %></li>
+    <% end %>
+  <% end %>
+  <br />
+  
   <p>
     First name:
     <br />
