@@ -17,10 +17,8 @@ describe UsersController do
   describe "when logged in as an admin" do
     before do
       # DB.transaction(:rollback => :always) do
-        @users.insert(admin: true, fname: "f1", lname: "l1", email: "e1", username: "u1")
-        @users.insert(fname: "different_user", lname: "l1")
-        @admin = @users.where(admin: true).first
-        @user = @users.where(fname: "different_user").first
+        @admin = User.create(admin: true, fname: "ff1", lname: "ll1", email: "ee1@e1.com", username: "uu1")
+        @user = User.create(fname: "different_user", lname: "ll1", email:"diff@diff.com", username: "diff1")
         env "rack.session", {:current_user_id => @admin[:id]}
       # end
     end
@@ -48,10 +46,8 @@ describe UsersController do
   describe "when logged in as a regular user" do
     before do
       # DB.transaction(:rollback => :always) do
-        @users.insert(admin: false, fname: "f2", lname: "l2", email: "e2", username: "u2")
-        @users.insert(fname: "different_user", lname: "l2")
-        @regular_user = @users.where(admin: false).first
-        @user = @users.where(fname: "different_user").first
+        @regular_user = User.create(admin: false, fname: "ff2", lname: "ll2", email: "ee2@e2.com", username: "uu2")
+        @user = User.create(fname: "different_user", lname: "ll2", email:"diff@diff.com", username: "diff1")
         env "rack.session", {:current_user_id => @regular_user[:id]}
       # end
     end
@@ -76,8 +72,8 @@ describe UsersController do
   describe "testing login, create, update and delete" do
     before do
       # DB.transaction(:rollback => :always) do
-        post '/users', params = {fname: "f3", lname: "l3", email: "e3", username: "u3", password: "p3"}
-        @user = @users.where(fname: "f3").first
+        post '/users', params = {fname: "ff3", lname: "ll3", email: "ee3@e3.com", username: "uu3", password: "p3"}
+        @user = User.first(fname: "ff3")
       # end
     end
 
@@ -87,7 +83,7 @@ describe UsersController do
     end
 
     it "successfully logs in a user" do
-      post '/users/login', params = {username: "u3", password: "p3"}
+      post '/users/login', params = {username: "uu3", password: "p3"}
       follow_redirect!
       path = last_request.fullpath
       path.must_equal "/users/#{@user[:id]}"
@@ -95,8 +91,8 @@ describe UsersController do
 
     it "updates current_user info" do
       env "rack.session", {:current_user_id => @user[:id]}
-      patch "/users/#{@user[:id]}", params = {fname: "FNAME", lname: "l3", email: "e3", username: "u3", password: "p3"}
-      @user = @users.where(id: @user[:id]).first
+      patch "/users/#{@user[:id]}", params = {fname: "FNAME", lname: "ll3", email: "ee3@e3.com", username: "uu3", password: "p3"}
+      @user = User.first(id: @user[:id])
       @user[:fname].must_equal "FNAME"
     end
 
@@ -104,7 +100,7 @@ describe UsersController do
     it "deletes current_user account" do
       current_user_id = @user[:id]
       delete "/users/#{current_user_id}"
-      deleted_user = @users.where(id: current_user_id).first
+      deleted_user = User.first(id: current_user_id)
       deleted_user.must_be_nil
     end
   end
