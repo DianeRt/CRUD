@@ -3,12 +3,16 @@
     <input type="hidden" name="_method" value="patch">
   <% end %>
 
-  <%= flash[:success] %>
+  <!-- Validation error messages-->
   <% if flash[:error] %>
-   <% flash[:error].each do |error| %>
-     <li><%= error.capitalize + "." %></li>
+   <% flash[:error].each do |attribute, error| %>
+    <% if attribute == [:fname, :lname] %>
+      <% attribute = "First name and last name" %> 
+    <% end %>
+    <li><%= "#{attribute.capitalize} #{error.first}." %></li>
     <% end %>
   <% end %>
+
   <br />
   
   <p>
