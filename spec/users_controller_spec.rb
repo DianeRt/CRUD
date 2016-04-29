@@ -6,21 +6,19 @@ end
 
 describe UsersController do
   before do
-    @users = DB[:users]
+    DatabaseCleaner.start
   end
 
   after do
-    @users.truncate
+    DatabaseCleaner.clean
   end
  
   #-------------------------------------------------------------------------------------
   describe "when logged in as an admin" do
     before do
-      # DB.transaction(:rollback => :always) do
         @admin = User.create(admin: true, fname: "ff1", lname: "ll1", email: "ee1@e1.com", username: "uu1")
         @user = User.create(fname: "different_user", lname: "ll1", email:"diff@diff.com", username: "diff1")
         env "rack.session", {:current_user_id => @admin[:id]}
-      # end
     end
 
     it "able to access '/users' page" do
@@ -34,7 +32,7 @@ describe UsersController do
     end
 
     it "displays all users '/users' page" do
-      number_of_users = @users.count
+      number_of_users = User.count
       get '/users'
       users_page = Nokogiri::HTML(last_response.body)
       li_size = users_page.search("li").size
@@ -45,11 +43,9 @@ describe UsersController do
   #-------------------------------------------------------------------------------------
   describe "when logged in as a regular user" do
     before do
-      # DB.transaction(:rollback => :always) do
         @regular_user = User.create(admin: false, fname: "ff2", lname: "ll2", email: "ee2@e2.com", username: "uu2")
         @user = User.create(fname: "different_user", lname: "ll2", email:"diff@diff.com", username: "diff1")
         env "rack.session", {:current_user_id => @regular_user[:id]}
-      # end
     end
 
     it "can view own page" do
@@ -71,13 +67,10 @@ describe UsersController do
   # #-------------------------------------------------------------------------------------
   describe "testing login, create, update and delete" do
     before do
-      # DB.transaction(:rollback => :always) do
         post '/users', params = {fname: "ff3", lname: "ll3", email: "ee3@e3.com", username: "uu3", password: "p3"}
         @user = User.first(fname: "ff3")
-      # end
     end
 
-    # works with DB.transaction
     it "successfully creates a new user" do
       @user.wont_be_nil
     end
@@ -96,7 +89,6 @@ describe UsersController do
       @user[:fname].must_equal "FNAME"
     end
 
-    # works with DB.transaction
     it "deletes current_user account" do
       current_user_id = @user[:id]
       delete "/users/#{current_user_id}"
