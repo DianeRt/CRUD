@@ -10,6 +10,7 @@ group :development, :test do
   gem 'rerun'
   gem 'rack-test', require: 'rack/test'
   gem 'minitest'
+  gem 'database_cleaner'
   gem 'nokogiri'
   gem 'rake'
 end
