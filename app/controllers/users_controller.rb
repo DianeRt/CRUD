@@ -39,7 +39,7 @@ class UsersController < ApplicationController
     @user = User.first(username: params[:username])
     if @user == nil
       flash[:error] = "Wrong username or password"
-      redirect '/homepage'
+      redirect back
     else
       password_salt, password_hash = User.password(params[:password], @user[:password_salt])
       if @user[:password_hash] == password_hash
@@ -47,7 +47,7 @@ class UsersController < ApplicationController
         redirect "/users/#{@user[:id]}"
       else
         flash[:error] = "Wrong username or password"
-        redirect '/homepage'
+        redirect back
       end
     end
   end
@@ -78,20 +78,26 @@ class UsersController < ApplicationController
         redirect "/users/#{@user[:id]}"
       end
     else
-      flash[:error] = @user.errors.full_messages
-      redirect '/users/new/?'
+      flash[:error] = @user.errors
+      redirect back
     end
   end
 
   # Updates/Edits info of user
   #-----------------------------------------------------------------
   patch '/users/:id/?' do
-    @user = User.first(id: params[:id])
     password_salt, password_hash = User.password(params[:password])
-    @user.update(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
-    @user = current_user
-    flash[:success] = "Successfully updated user info"
-    redirect "/users/#{@user[:id]}"
+    @user = User.new(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
+    @user.valid?
+    if @user.errors.count == 0
+      User.first(id: params[:id]).update(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
+      @user = current_user
+      flash[:success] = "Successfully updated user info"
+      redirect "/users/#{@user[:id]}"
+    else
+      flash[:error] = @user.errors
+      redirect back
+    end
   end
 
   # Updates/Changes the admin status of user
@@ -101,8 +107,7 @@ class UsersController < ApplicationController
     user_admin = !@user[:admin]
     @user.update(admin: user_admin)
     status = user_admin ? "assigned as admin" : "removed as admin"
-    name = @user.first
-    flash[:success] = "#{name[:fname].capitalize} #{name[:lname].capitalize} is #{status}"
+    flash[:success] = "#{@user[:fname].capitalize} #{@user[:lname].capitalize} is #{status}"
     redirect "/users"
   end
 
