@@ -19,13 +19,12 @@ class ApplicationController < Sinatra::Base
   enable :method_override
   disable :show_exceptions   # disabled to hide NoMethodError. Display an error 500 page instead.
   register Sinatra::Flash
-  set :views, File.expand_path('../../views', __FILE__)
+  set :views, proc { File.join(root, "..", "views") } 
+  set :public_folder, proc { File.join(root, "../../") } # set public folder location relative to this file
 
-  # create @users variable to give access to view files
-  #-----------------------------------------------------------------
+
   def initialize
     super
-    @users = DB[:users] #=> Sequel::Dataset
   end
 
   def user_signed_in?
@@ -33,17 +32,17 @@ class ApplicationController < Sinatra::Base
   end
 
   def current_user
-    @current_user ||= @users.where(id: session[:current_user_id]).first
+    @current_user ||= User.first(id: session[:current_user_id])
   end
 
   error 403 do
-    'Access forbidden'
+    erb :"error", locals: { error: "Access Forbidden"}
   end
 
   # Raises an error if admin goes to a '/users/:id' page that does not exist
   # Example: '/users/99' will not exist if there is no ID#99 in the database 
   error 500 do
-    'Page does not exist'
+    erb :"error", locals: { error: "Page does not exist"}
   end
 
   def authorize_user(params=nil)
@@ -65,7 +64,7 @@ class ApplicationController < Sinatra::Base
   end
 
   
-  # redirects '/' route to '/users' route
+  # redirects '/' route to '/homepage' route
   #-----------------------------------------------------------------
   get '/' do
     redirect '/homepage'

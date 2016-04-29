@@ -1,5 +1,5 @@
 require 'sinatra/base'
 
-Dir.glob('./app/{helpers,controllers}/*.rb').each { |file| require file }
+Dir.glob('./app/{controllers,models}/*.rb').each { |file| require file }
 
 run UsersController

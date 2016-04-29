@@ -10,7 +10,7 @@ class UsersController < ApplicationController
   #-----------------------------------------------------------------
   get '/users/?' do
     authorize_user do
-      @users = @users.order(:id).all
+      @users = User.order(:id).all
       erb :"index"
     end
   end
@@ -19,7 +19,7 @@ class UsersController < ApplicationController
   #-----------------------------------------------------------------
   get '/users/:id/?' do
     authorize_user(params[:id]) do
-      @user = @users.where(id: params[:id]).first
+      @user = User.first(id: params[:id])
       erb :"show"
     end
   end
@@ -28,7 +28,7 @@ class UsersController < ApplicationController
   #-----------------------------------------------------------------
   get '/users/:id/edit/?' do
     authorize_user(params[:id]) do
-      @user = @users.where(id: params[:id]).first
+      @user = User.first(id: params[:id])
       erb :"edit"
     end
   end
@@ -36,18 +36,18 @@ class UsersController < ApplicationController
   # Login - Checks user credentials
   #-----------------------------------------------------------------
   post '/users/login/?' do
-    @user = @users.where(username: params[:username]).first
+    @user = User.first(username: params[:username])
     if @user == nil
       flash[:error] = "Wrong username or password"
-      redirect '/homepage'
+      redirect back
     else
-      password = BCrypt::Engine.hash_secret(params[:password], @user[:password_salt])
-      if @user[:password_hash] == password
+      password_salt, password_hash = User.password(params[:password], @user[:password_salt])
+      if @user[:password_hash] == password_hash
         session[:current_user_id] = @user[:id]
         redirect "/users/#{@user[:id]}"
       else
         flash[:error] = "Wrong username or password"
-        redirect '/homepage'
+        redirect back
       end
     end
   end
@@ -64,49 +64,58 @@ class UsersController < ApplicationController
   # Creates new user and saves it to database
   #-----------------------------------------------------------------
   post '/users/?' do
-    password_salt = BCrypt::Engine.generate_salt
-    password_hash = BCrypt::Engine.hash_secret(params[:password], password_salt)
-    @users.insert(admin: false, fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
-    if user_signed_in?
-      flash[:success] = "Successfully added new user"
-      redirect '/users'
+    password_salt, password_hash = User.password(params[:password])
+    @user = User.new(admin: false, fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
+    @user.valid?
+    if @user.errors.count == 0
+      @user.save
+      if user_signed_in?
+        flash[:success] = "Successfully added new user"
+        redirect '/users'
+      else
+        flash[:succes] = "Successfully created new account"
+        session[:current_user_id] = @user[:id]
+        redirect "/users/#{@user[:id]}"
+      end
     else
-      flash[:succes] = "Successfully created new account"
-      @user = @users.where(username: params[:username]).first
-      session[:current_user_id] = @user[:id]
-      redirect "/users/#{@user[:id]}"
+      flash[:error] = @user.errors
+      redirect back
     end
   end
 
   # Updates/Edits info of user
   #-----------------------------------------------------------------
   patch '/users/:id/?' do
-    @user = @users.where(id: params[:id])
-    password_salt = BCrypt::Engine.generate_salt
-    password_hash = BCrypt::Engine.hash_secret(params[:password], password_salt)
-    @user.update(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
-    @user = current_user
-    flash[:success] = "Successfully updated user info"
-    redirect "/users/#{@user[:id]}"
+    password_salt, password_hash = User.password(params[:password])
+    @user = User.new(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
+    @user.valid?
+    if @user.errors.count == 0
+      User.first(id: params[:id]).update(fname: params[:fname], lname: params[:lname], email: params[:email], username: params[:username], password_salt: password_salt, password_hash: password_hash)
+      @user = current_user
+      flash[:success] = "Successfully updated user info"
+      redirect "/users/#{@user[:id]}"
+    else
+      flash[:error] = @user.errors
+      redirect back
+    end
   end
 
   # Updates/Changes the admin status of user
   #-----------------------------------------------------------------
   patch '/users/admin/:id/?' do
-    @user = @users.where(id: params[:id])
+    @user = User.first(id: params[:id])
     user_admin = !@user[:admin]
     @user.update(admin: user_admin)
     status = user_admin ? "assigned as admin" : "removed as admin"
-    name = @user.first
-    flash[:success] = "#{name[:fname].capitalize} #{name[:lname].capitalize} is #{status}"
+    flash[:success] = "#{@user[:fname].capitalize} #{@user[:lname].capitalize} is #{status}"
     redirect "/users"
   end
 
   # Deletes User
   #-----------------------------------------------------------------
   delete '/users/:id/?' do
-    name = @users.where(id: params[:id]).first
-    @users.where(id: params[:id]).delete
+    name = User.first(id: params[:id])
+    User[params[:id]].delete
     if current_user == nil
       flash[:success] = "Successfully deleted account"
       session[:current_user_id] = nil
