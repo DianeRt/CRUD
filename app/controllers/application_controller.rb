@@ -5,13 +5,13 @@ require 'sinatra/base'
 Bundler.require(:default) 
 
 configure :test do
- set :database, 'postgresql://localhost/test'
- DB = Sequel.connect("postgresql://localhost/test")
+ set :database, 'postgresql://localhost/crud_test'
+ DB = Sequel.connect("postgresql://localhost/crud_test")
 end
 
 configure :development do
-  set :database, 'postgresql://localhost/users'
-  DB = Sequel.connect("postgresql://localhost/users")
+  set :database, 'postgresql://localhost/crud_development'
+  DB = Sequel.connect("postgresql://localhost/crud_development")
 end
 
 class ApplicationController < Sinatra::Base
