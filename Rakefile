@@ -4,9 +4,9 @@ namespace :db do
     require "sequel"
     Sequel.extension :migration
     if (ENV['RACK_ENV'] == "test")
-      db = Sequel.connect("postgresql://localhost/test")
+      db = Sequel.connect("postgresql://localhost/crud_test")
     else
-      db = Sequel.connect("postgresql://localhost/users")
+      db = Sequel.connect("postgresql://localhost/crud_development")
     end
     if args[:version]
       puts "Migrating to version #{args[:version]}"
@@ -42,7 +42,6 @@ namespace :mini do
   desc "Run minitest"
   task :test
   ENV['RACK_ENV'] = 'test'
-  Rake::Task["db:migrate"].invoke
   require 'rake/testtask'
   Rake::TestTask.new do |t|
     t.libs = %w(spec app)
