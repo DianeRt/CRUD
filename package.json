@@ -1,0 +1,35 @@
+{
+  "name": "asset-test",
+  "version": "1.0.0",
+  "description": "asset management",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DianeRt/crud.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DianeRt/crud/issues"
+  },
+  "homepage": "https://github.com/DianeRt/crud#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.3.0",
+    "bootstrap": "^3.3.6",
+    "browserify": "^13.0.1",
+    "event-stream": "^3.3.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.0",
+    "gulp-sass": "^2.2.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.3",
+    "gulp-yuicompressor": "0.0.3"
+  }
+}
